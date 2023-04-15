@@ -20,17 +20,33 @@ import java.util.*;
  */
 public class _15_3Sum {
     public List<List<Integer>> practice(int[] nums) {
-        Set<List<Integer>> result = new HashSet<>();
+        List<List<Integer>> result = new LinkedList<>();
         Arrays.sort(nums);
-        int start = 0;
-        int end = nums.length - 1;
-        while (start != end) {
-            int mid = start + 1;
-            for (; mid < end; mid++) {
-
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+            int start = i + 1;
+            int end = nums.length - 1;
+            while (start < end) {
+                int sum = nums[i] + nums[start] + nums[end];
+                if (sum > 0) {
+                    end -= 1;
+                } else if (sum < 0) {
+                    start += 1;
+                } else {
+                    List<Integer> current = Arrays.asList(nums[i], nums[start], nums[end]);
+                    result.add(current);
+                    while (start < end && nums[start] == nums[start + 1]) {
+                        start +=1;
+                    }
+                    while (start < end && nums[end] == nums[end - 1]) {
+                        end -= 1;
+                    }
+                    start += 1;
+                    end -= 1;
+                }
             }
         }
-        return result.stream().toList();
+        return result;
     }
 
     public static void main(String[] args) {
