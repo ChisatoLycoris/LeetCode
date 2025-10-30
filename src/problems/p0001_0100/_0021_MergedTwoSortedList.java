@@ -7,14 +7,16 @@ import difficulty.Easy;
 /**
  * You are given the heads of two sorted linked lists list1 and list2.
  * Merge the two lists in a one sorted list.
- * The list should be made by splicing together the nodes of the first two lists.
+ * The list should be made by splicing together the nodes of the first two
+ * lists.
  * Return the head of the merged linked list.
  *
  * Example 1:
  * Input: list1 = [1,2,4], list2 = [1,3,4]
  * Output: [1,1,2,3,4,4]
  *
- * <a href="https://leetcode.com/problems/merge-two-sorted-lists/">21. Merge Two Sorted Lists</a>
+ * <a href="https://leetcode.com/problems/merge-two-sorted-lists/">21. Merge Two
+ * Sorted Lists</a>
  */
 public class _0021_MergedTwoSortedList implements LinkedListPattern, TwoPointersPattern, Easy {
     public ListNode practice(ListNode list1, ListNode list2) {
@@ -36,8 +38,17 @@ public class _0021_MergedTwoSortedList implements LinkedListPattern, TwoPointers
     private class ListNode {
         int val;
         ListNode next;
-        ListNode() {}
-        ListNode(int val) {this.val = val;}
-        ListNode(int val, ListNode next) {this.val = val; this.next =next;}
+
+        ListNode() {
+        }
+
+        ListNode(int val) {
+            this.val = val;
+        }
+
+        ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
     }
 }
