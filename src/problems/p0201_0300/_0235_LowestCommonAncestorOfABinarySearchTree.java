@@ -54,7 +54,7 @@ public class _0235_LowestCommonAncestorOfABinarySearchTree
     }
 
     /**
-     * Time Complexity: O(logN)
+     * Time Complexity: O(H) where H is the height of the tree
      * Space Complexity: O(1)
      */
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
