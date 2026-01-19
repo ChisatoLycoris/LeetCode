@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important: Practice Mode
+
+**NEVER implement solution code for LeetCode problems.** This is a practice repository - leave all TODO sections empty so the user can solve the problems themselves. Only set up problem templates with method signatures.
+
 ## Project Overview
 
 This is a personal LeetCode practice repository containing Java solutions organized by problem ID with pattern-based tagging using interfaces. Each problem is implemented with detailed comments, complexity analysis, and multiple solution approaches.
