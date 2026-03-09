@@ -28,41 +28,42 @@ import java.util.*;
  * <a href="https://leetcode.com/problems/3sum/">15. 3Sum</a>
  */
 public class _0015_3Sum implements ArrayPattern, TwoPointersPattern, SortingPattern, Medium {
-  public List<List<Integer>> practice(int[] nums) {
-    List<List<Integer>> result = new LinkedList<>();
-    Arrays.sort(nums);
-    for (int i = 0; i < nums.length - 2; i++) {
-      if (i > 0 && nums[i] == nums[i - 1])
-        continue;
-      int start = i + 1;
-      int end = nums.length - 1;
-      while (start < end) {
-        int sum = nums[i] + nums[start] + nums[end];
-        if (sum > 0) {
-          end -= 1;
-        } else if (sum < 0) {
-          start += 1;
-        } else {
-          List<Integer> current = Arrays.asList(nums[i], nums[start], nums[end]);
-          result.add(current);
-          while (start < end && nums[start] == nums[start + 1]) {
-            start += 1;
-          }
-          while (start < end && nums[end] == nums[end - 1]) {
-            end -= 1;
-          }
-          start += 1;
-          end -= 1;
+    /**
+     * Time Complexity: O(N^2)
+     * Space Complexity: O(N)
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (nums[i] > 0) {
+                break;
+            }
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int start = i + 1;
+            int end = nums.length - 1;
+            while (start < end) {
+                int sum = nums[i] + nums[start] + nums[end];
+                if (sum > 0) {
+                    end -= 1;
+                } else if (sum < 0) {
+                    start += 1;
+                } else {
+                    List<Integer> current = Arrays.asList(nums[i], nums[start], nums[end]);
+                    result.add(current);
+                    while (start < end && nums[start] == nums[start + 1]) {
+                        start += 1;
+                    }
+                    while (start < end && nums[end] == nums[end - 1]) {
+                        end -= 1;
+                    }
+                    start += 1;
+                    end -= 1;
+                }
+            }
         }
-      }
+        return result;
     }
-    return result;
-  }
-
-  public static void main(java.lang.String[] args) {
-    int[] nums = { -1, 0, 1, 2, -1, -4 };
-    // [-4, -1, -1, 0, 1, 2]
-    System.out.println(new _0015_3Sum().practice(nums));
-    System.out.println("Still in progress...");
-  }
 }
