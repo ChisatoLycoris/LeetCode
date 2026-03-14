@@ -1,16 +1,19 @@
 package problems.p0101_0200;
 
 import patterns.BreadthFirstSearchPattern;
+import patterns.DepthFirstSearchPattern;
 import patterns.TreePattern;
 import patterns.QueuePattern;
 import difficulty.Medium;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Given the root of a binary tree,
- * return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
+ * return the level order traversal of its nodes' values. (i.e., from left to
+ * right, level by level).
  *
  * Example 1:
  * Input: root = [3,9,20,null,null,15,7]
@@ -24,9 +27,36 @@ import java.util.List;
  * Input: root = []
  * Output: []
  * <br>
- * <a href="https://leetcode.com/problems/binary-tree-level-order-traversal/">102. Binary Tree Level Order Traversal</a>
+ * <a href=
+ * "https://leetcode.com/problems/binary-tree-level-order-traversal/">102.
+ * Binary Tree Level Order Traversal</a>
  */
-public class _0102_BinaryTreeLevelOrderTraversal implements BreadthFirstSearchPattern, TreePattern, QueuePattern, Medium {
+public class _0102_BinaryTreeLevelOrderTraversal
+        implements BreadthFirstSearchPattern, DepthFirstSearchPattern, TreePattern, QueuePattern, Medium {
+    /**
+     * Time Complexity: O(n)
+     * Space Complexity: O(n)
+     */
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        dfs(root, 0, result);
+        return result;
+    }
+
+    private void dfs(TreeNode node, int depth, List<List<Integer>> result) {
+        if (node == null)
+            return;
+        if (depth == result.size())
+            result.add(new ArrayList<>());
+        result.get(depth).add(node.val);
+        dfs(node.left, depth + 1, result);
+        dfs(node.right, depth + 1, result);
+    }
+
+    /**
+     * Time Complexity: O(n)
+     * Space Complexity: O(n)
+     */
     public List<List<Integer>> practice(TreeNode root) {
         LinkedList<TreeNode> currentLevel = new LinkedList<>();
         LinkedList<TreeNode> nextLevel = new LinkedList<>();
@@ -50,6 +80,10 @@ public class _0102_BinaryTreeLevelOrderTraversal implements BreadthFirstSearchPa
         return result;
     }
 
+    /**
+     * Time Complexity: O(n)
+     * Space Complexity: O(n)
+     */
     public List<List<Integer>> BFS(TreeNode root) {
         List<List<Integer>> result = new LinkedList<>();
         if (root == null) {
@@ -79,12 +113,18 @@ public class _0102_BinaryTreeLevelOrderTraversal implements BreadthFirstSearchPa
         int val;
         TreeNode left;
         TreeNode right;
-        TreeNode() {}
-        TreeNode(int val) { this.val = val; }
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
         TreeNode(int val, TreeNode left, TreeNode right) {
             this.val = val;
             this.left = left;
             this.right = right;
-      }
+        }
     }
 }
