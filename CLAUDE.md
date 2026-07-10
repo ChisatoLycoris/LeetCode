@@ -30,27 +30,8 @@ The repository uses pattern-based tagging with interface implementations for org
 src/
 ├── patterns/              # Pattern marker interfaces for categorization
 │   ├── ArrayPattern.java
-│   ├── BinarySearchPattern.java
-│   ├── BreadthFirstSearchPattern.java
-│   ├── DepthFirstSearchPattern.java
-│   ├── DivideAndConquerPattern.java
 │   ├── DynamicProgrammingPattern.java
-│   ├── SlidingWindowPattern.java
-│   ├── TwoPointersPattern.java
-│   ├── BacktrackingPattern.java
-│   ├── GreedyPattern.java
-│   ├── HashTablePattern.java
-│   ├── HeapPattern.java
-│   ├── LinkedListPattern.java
-│   ├── StackPattern.java
-│   ├── QueuePattern.java
-│   ├── TreePattern.java
-│   ├── GraphPattern.java
-│   ├── StringPattern.java
-│   ├── SortingPattern.java
-│   ├── BitManipulationPattern.java
-│   ├── MathPattern.java
-│   └── UnionFindPattern.java
+│   └── ...               # One marker interface per pattern — list via `ls src/patterns/`
 │
 ├── difficulty/            # Difficulty marker interfaces
 │   ├── Easy.java

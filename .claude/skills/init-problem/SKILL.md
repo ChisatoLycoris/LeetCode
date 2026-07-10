@@ -65,7 +65,7 @@ Create the package directory if needed, then create the Java file using the temp
 
 1. **Javadoc**: `description` text (keep examples and constraints), ending with the `<a href="{url}">{id}. {title}</a>` link
 2. **implements**: all interfaces from `patterns` + the difficulty interface
-3. **Method stub**: signature from `javaSnippet` (drop the `class Solution` wrapper), with complexity placeholder Javadoc and an empty `// TODO: Implement solution` body — NEVER implement the solution (Practice Mode)
+3. **Method stub**: signature from `javaSnippet` (drop the `class Solution` wrapper), with literal `O(?)` complexity placeholders (`Time Complexity: O(?)` / `Space Complexity: O(?)` — never pre-fill the actual complexity, that spoils the exercise) and an empty `// TODO: Implement solution` body — NEVER implement the solution (Practice Mode)
 4. **Inner classes**: if the signature uses `ListNode` / `TreeNode` / `Node`, add the definition from `references/inner-classes.md`
 
 ### Step 5: Report
