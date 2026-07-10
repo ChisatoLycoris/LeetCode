@@ -43,7 +43,7 @@ public class _0200_NumberOfIslands implements BreadthFirstSearchPattern, DepthFi
      * Time Complexity: O(m * n)
      * Space Complexity: O(m * n)
      */
-    public int Dfs(char[][] grid) {
+    public int dfs(char[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
         int result = 0;
@@ -82,7 +82,7 @@ public class _0200_NumberOfIslands implements BreadthFirstSearchPattern, DepthFi
      * Time Complexity: O(m * n)
      * Space Complexity: O(m * n)
      */
-    public int Bfs(char[][] grid) {
+    public int bfs(char[][] grid) {
         int m = grid.length;
         int n = grid[0].length;
         int result = 0;
@@ -97,14 +97,14 @@ public class _0200_NumberOfIslands implements BreadthFirstSearchPattern, DepthFi
                     result += 1;
                     Queue<Integer> queue = new LinkedList<>();
                     queue.add(i * n + j);
-                    markeIslandBfs(queue, grid, checked);
+                    markIslandBfs(queue, grid, checked);
                 }
             }
         }
         return result;
     }
 
-    private void markeIslandBfs(Queue<Integer> queue, char[][] grid, boolean[][] checked) {
+    private void markIslandBfs(Queue<Integer> queue, char[][] grid, boolean[][] checked) {
         while (!queue.isEmpty()) {
             int target = queue.poll();
             int n = grid[0].length;
