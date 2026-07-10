@@ -3,10 +3,13 @@ package problems.p0101_0200;
 import patterns.BreadthFirstSearchPattern;
 import patterns.DepthFirstSearchPattern;
 import patterns.GraphPattern;
+import patterns.UnionFindPattern;
 import patterns.ArrayPattern;
 import difficulty.Medium;
 
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
@@ -34,113 +37,152 @@ import java.util.LinkedList;
  * <br>
  * <a href="https://leetcode.com/problems/number-of-islands/">200. Number of Islands</a>
  */
-public class _0200_NumberOfIslands implements BreadthFirstSearchPattern, DepthFirstSearchPattern, GraphPattern, ArrayPattern, Medium {
-    public int practice(char[][] grid) {
-        boolean[] cached = new boolean[(grid.length + 2) * (grid[0].length + 2)];
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j] == '1') {
-                    int index = (i + 1) * (grid[0].length + 2) + j + 1;
-                    cached[index] = true;
-                }
-            }
-        }
-        int island = 0;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                int index = (i + 1) * (grid[0].length + 2) + j + 1;
-                if (!cached[index]) {
+public class _0200_NumberOfIslands implements BreadthFirstSearchPattern, DepthFirstSearchPattern, GraphPattern, UnionFindPattern, ArrayPattern, Medium {
+
+    /**
+     * Time Complexity: O(m * n)
+     * Space Complexity: O(m * n)
+     */
+    public int Dfs(char[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int result = 0;
+        boolean[][] checked = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j  = 0; j < n; j++) {
+                if (checked[i][j]) {
                     continue;
                 }
-                island += 1;
-                LinkedList<Integer> queue = new LinkedList<>();
-                queue.add(index);
-                while (!queue.isEmpty()) {
-                    int current = queue.removeFirst();
-                    if (cached[current - grid[0].length - 2]) {
-                        queue.addFirst(current - grid[0].length - 2);
-                        cached[current - grid[0].length - 2] = false;
-                    }
-                    if (cached[current - 1]) {
-                        queue.addFirst(current - 1);
-                        cached[current - 1] = false;
-                    }
-                    if (cached[current + 1]) {
-                        queue.addFirst(current + 1);
-                        cached[current + 1] = false;
-                    }
-                    if (cached[current + grid[0].length + 2]) {
-                        queue.addFirst(current + grid[0].length + 2);
-                        cached[current + grid[0].length + 2] = false;
-                    }
+                if (grid[i][j] == '0') {
+                    checked[i][j] =  true;
+                } else {
+                    result += 1;
+                    markIslandDfs(i, j, grid, checked);
                 }
             }
         }
-        return island;
+        return result;
     }
 
-    public int practice2(char[][] grid) {
-        int island = 0;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[i].length; j++) {
-                if (grid[i][j] == '0') {
-                    continue;
-                }
-                island += 1;
-                LinkedList<Integer> queue = new LinkedList<>();
-                queue.addLast(i);
-                queue.addLast(j);
-                while (!queue.isEmpty()) {
-                    int indexI = queue.removeFirst();
-                    int indexJ = queue.removeFirst();
-                    if (indexI > 0 && grid[indexI - 1][indexJ] == '1') {
-                        queue.addLast(indexI - 1);
-                        queue.addLast(indexJ);
-                        grid[indexI - 1][indexJ] = '0';
-                    }
-                    if (indexJ > 0 && grid[indexI][indexJ - 1] == '1') {
-                        queue.addLast(indexI);
-                        queue.addLast(indexJ - 1);
-                        grid[indexI][indexJ - 1] = '0';
-                    }
-                    if (indexJ < (grid[0].length - 1) && grid[indexI][indexJ + 1] == '1') {
-                        queue.addLast(indexI);
-                        queue.addLast(indexJ + 1);
-                        grid[indexI][indexJ + 1] = '0';
-                    }
-                    if (indexI < (grid.length - 1) && grid[indexI + 1][indexJ] == '1') {
-                        queue.addLast(indexI + 1);
-                        queue.addLast(indexJ);
-                        grid[indexI + 1][indexJ] = '0';
-                    }
-                }
-            }
+    private void markIslandDfs(int i, int j, char[][] grid, boolean[][] checked) {
+        if (i < 0 || i >= checked.length || j < 0 || j >= checked[0].length) {
+            return;
         }
-        return island;
+        if (checked[i][j] || grid[i][j] == '0') {
+            return;
+        }
+        checked[i][j] = true;
+        markIslandDfs(i + 1, j, grid, checked);
+        markIslandDfs(i - 1, j, grid, checked);
+        markIslandDfs(i, j + 1, grid, checked);
+        markIslandDfs(i, j - 1, grid, checked);
     }
 
     /**
-     * <a href="https://leetcode.com/problems/number-of-islands/solutions/56359/very-concise-java-ac-solution/">source</a>
+     * Time Complexity: O(m * n)
+     * Space Complexity: O(m * n)
      */
-    public int optimal(char[][] grid) {
-        int count = 0;
-        for (int i = 0; i < grid.length; i++) {
-            for (int j = 0; j < grid[0].length; j++) {
+    public int Bfs(char[][] grid) {
+        int m = grid.length;
+        int n = grid[0].length;
+        int result = 0;
+        boolean[][] checked = new boolean[m][n];
+        for (int i = 0; i < m; i++) {
+            for (int j  = 0; j < n; j++) {
+                if (checked[i][j]) {
+                    continue;
+                }
+                checked[i][j] =  true;
                 if (grid[i][j] == '1') {
-                    DFSMarking(grid, i, j);
-                    count++;
+                    result += 1;
+                    Queue<Integer> queue = new LinkedList<>();
+                    queue.add(i * n + j);
+                    markeIslandBfs(queue, grid, checked);
+                }
+            }
+        }
+        return result;
+    }
+
+    private void markeIslandBfs(Queue<Integer> queue, char[][] grid, boolean[][] checked) {
+        while (!queue.isEmpty()) {
+            int target = queue.poll();
+            int n = grid[0].length;
+            int i = target / n;
+            int j = target % n;
+            if (grid[i][j] == '0') {
+                continue;
+            }
+            if (i > 0 && !checked[i - 1][j]) {
+                checked[i - 1][j] = true;
+                queue.add(i * n - n + j);
+            }
+            if (i < grid.length - 1 && !checked[i + 1][j]) {
+                checked[i + 1][j]  = true;
+                queue.add(i * n + n + j);
+            }
+            if (j > 0 && !checked[i][j - 1]) {
+                checked[i][j - 1] = true;
+                queue.add(i * n + j - 1);
+            }
+            if (j < grid[0].length - 1 && !checked[i][j + 1]) {
+                checked[i][j + 1] = true;
+                queue.add(i * n + j + 1);
+            }
+        }
+    }
+
+    /**
+     * Time Complexity: O(m * n)
+     * Space Complexity: O(m * n)
+     */
+
+    public int unionFind(char[][] grid) {
+        int count = grid.length * grid[0].length;
+        int[] parent = new int[count];
+        Arrays.fill(parent, count);
+        for (int i =  0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == '0') {
+                    count--;
+                    continue;
+                }
+                int cur = i * grid[0].length + j;
+                if (i < grid.length - 1 && grid[i + 1][j] == '1') {
+                    int down = (i + 1) * grid[0].length + j;
+                    if (union(cur, down, parent)) {
+                        count--;
+                    }
+                }
+                if (j < grid[0].length -1 && grid[i][j + 1] == '1') {
+                    int right = i * grid[0].length + j + 1;
+                    if (union(cur, right, parent)) {
+                        count--;
+                    }
                 }
             }
         }
         return count;
     }
 
-    private void DFSMarking(char[][] grid, int i, int j) {
-        if (i < 0 || j < 0 || i >= grid.length || j >= grid[i].length || grid[i][j] != '1') return;
-        grid[i][j] = '0';
-        DFSMarking(grid, i + 1, j);
-        DFSMarking(grid, i - 1, j);
-        DFSMarking(grid, i, j + 1);
-        DFSMarking(grid, i, j - 1);
+    private int find(int x, int[] parent) {
+        if (parent[x] == parent.length) {
+            parent[x] = x;
+        }
+        while(parent[x] != x) {
+            parent[x] = parent[parent[x]];
+            x = parent[x];
+        }
+        return x;
+    }
+
+    private boolean union(int x, int y, int[] parent)  {
+        int rx = find(x, parent);
+        int ry = find(y, parent);
+        if (rx == ry) {
+            return false;
+        }
+        parent[ry] = parent[rx];
+        return true;
     }
 }

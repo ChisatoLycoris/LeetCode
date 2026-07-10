@@ -45,7 +45,8 @@ src/
 │   ├── StringPattern.java
 │   ├── SortingPattern.java
 │   ├── BitManipulationPattern.java
-│   └── MathPattern.java
+│   ├── MathPattern.java
+│   └── UnionFindPattern.java
 │
 ├── difficulty/            # Difficulty marker interfaces
 │   ├── Easy.java
@@ -222,6 +223,7 @@ grep -r "implements.*SlidingWindowPattern.*Easy\|implements.*Easy.*SlidingWindow
 - **Binary Search**: 167, 852
 - **Tree**: 102, 111, 637
 - **Graph**: 200, 207, 210
+- **Union-Find**: 200
 
 ## Code Patterns and Conventions
 
