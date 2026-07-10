@@ -7,8 +7,9 @@ OUT_DIR = out
 # Java source files
 PATTERN_SRC = $(shell find $(SRC_DIR)/patterns -name "*.java")
 DIFFICULTY_SRC = $(shell find $(SRC_DIR)/difficulty -name "*.java")
+UTILS_SRC = $(shell find $(SRC_DIR)/utils -name "*.java" 2>/dev/null)
 PROBLEM_SRC = $(shell find $(SRC_DIR)/problems -name "*.java")
-ALL_SRC = $(PATTERN_SRC) $(DIFFICULTY_SRC) $(PROBLEM_SRC)
+ALL_SRC = $(PATTERN_SRC) $(DIFFICULTY_SRC) $(UTILS_SRC) $(PROBLEM_SRC)
 
 # Java compiler
 JAVAC = javac

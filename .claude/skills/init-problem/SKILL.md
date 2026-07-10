@@ -101,6 +101,10 @@ When user specifies patterns/difficulty:
 3. Update class declaration to implement specified interfaces
 4. Remove the `/* TODO: implements ... */` comment
 
+### Test Harness
+
+When the user reports a failing test case or asks to test against a LeetCode input, use the **debug-problem** skill instead — it builds a `main()` harness with `utils.LeetCodeInput`.
+
 ## Reference Files
 
 - **`references/class-template.md`** - Java class template for new problems

@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **NEVER implement solution code for LeetCode problems.** This is a practice repository - leave all TODO sections empty so the user can solve the problems themselves. Only set up problem templates with method signatures.
 
+This rule applies to problem solutions only. Shared infrastructure under `src/utils/` (test-input parsing, debug helpers) is regular code and may be fully implemented and maintained.
+
 ## Project Overview
 
 This is a personal LeetCode practice repository containing Java solutions organized by problem ID with pattern-based tagging using interfaces. Each problem is implemented with detailed comments, complexity analysis, and multiple solution approaches.
@@ -53,14 +55,16 @@ src/
 │   ├── Medium.java
 │   └── Hard.java
 │
+├── utils/                 # Shared debug/test infrastructure (fully implemented)
+│   └── LeetCodeInput.java # Parses LeetCode test-case notation into Java data
+│
 └── problems/              # Problems organized by ID ranges (100 per directory)
     ├── p0001_0100/       # Problems 1-100
     ├── p0101_0200/       # Problems 101-200
-    ├── p0201_0300/       # Problems 201-300
-    ├── p0601_0700/       # Problems 601-700
-    ├── p0801_0900/       # Problems 801-900
-    └── p0901_1000/       # Problems 901-1000
+    └── ...               # One directory per 100-problem range, created as needed
 ```
+
+Note: the pattern interface and problem-range listings above are illustrative, not exhaustive — derive the current state from `src/patterns/` and `src/problems/` directly.
 
 ## File Naming Convention
 
@@ -208,22 +212,43 @@ grep -r "implements.*SlidingWindowPattern.*Easy\|implements.*Easy.*SlidingWindow
 
 ## Current Problem Collection
 
-**30 problems fully migrated** across different difficulty levels and patterns:
+Do not maintain a manual problem list here — it goes stale. Derive the current collection from the source tree:
 
-### By Difficulty
-- **Easy**: 1, 13, 14, 20, 21, 111, 637, 643, 852
-- **Medium**: 2, 3, 5, 7, 8, 11, 15, 17, 19, 23, 53, 91, 102, 139, 167, 198, 200, 207, 209, 210, 904
-- **Hard**: 23
+```bash
+# List all problems
+ls src/problems/*/
 
-### By Pattern (Examples)
-- **Dynamic Programming**: 5, 53, 91, 139, 198
-- **Sliding Window**: 3, 209, 643, 904
-- **Two Pointers**: 11, 15, 19, 20, 21, 167, 209
-- **BFS/DFS**: 102, 111, 200, 207, 210, 637
-- **Binary Search**: 167, 852
-- **Tree**: 102, 111, 637
-- **Graph**: 200, 207, 210
-- **Union-Find**: 200
+# Count problems
+ls src/problems/*/_*.java | wc -l
+
+# List by difficulty
+grep -rl "implements.*Medium" src/problems/
+
+# List by pattern
+grep -rl "implements.*DynamicProgrammingPattern" src/problems/
+```
+
+## Debugging Failing Test Cases
+
+`utils.LeetCodeInput` parses LeetCode's test-case notation (JSON-like) directly into Java data structures, so failing test cases can be pasted verbatim into a `main()` method:
+
+```java
+import utils.LeetCodeInput;
+
+// 直接貼上 LeetCode 的失敗測資(Java 21 text block 免跳脫引號)
+char[][] grid = LeetCodeInput.parseCharMatrix("""
+        [["1","1","0"],["0","1","0"]]
+        """);
+int[] nums = LeetCodeInput.parseIntArray("nums = [2,7,11,15]"); // 允許 "name =" 前綴
+int[][] edges = LeetCodeInput.parseIntMatrix("[[1,2],[2,3]]");
+Integer[] tree = LeetCodeInput.parseIntegerArray("[6,2,8,null,4]"); // 保留 null,供建樹使用
+String[] words = LeetCodeInput.parseStringArray("[\"flower\",\"flow\"]");
+List<List<Integer>> lists = LeetCodeInput.parseIntListList("[[1,2],[3]]");
+
+System.out.println(LeetCodeInput.gridToString(grid)); // 格網易讀輸出
+```
+
+When the user reports a failing test case, use the **debug-problem** skill (`.claude/skills/debug-problem/`). In short: add a `main()` harness that parses the pasted test case via `LeetCodeInput`, call each solution method with deep-copied inputs, run `make compile && make run PROBLEM=NNNN`, and compare against the expected answer. Writing the harness is allowed; fixing the solution body is not (Practice Mode).
 
 ## Code Patterns and Conventions
 
