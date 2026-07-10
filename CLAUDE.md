@@ -16,11 +16,13 @@ This is a personal LeetCode practice repository containing Java solutions organi
 
 The repository uses pattern-based tagging with interface implementations for organized LeetCode problem solutions.
 
-**Project Configuration Files:**
-- `.classpath` - Eclipse classpath configuration (defines `src` as source folder)
-- `.project` - Eclipse project configuration (enables Java nature)
+**Project Configuration Files (local-only, gitignored):**
+- `.classpath` - Eclipse classpath: `src` as source folder, JavaSE-21, output to `bin/`
+- `.project` - Eclipse project: plain Java nature (no Maven/m2e — this is not a Maven project)
 - `.settings/org.eclipse.jdt.core.prefs` - Java compiler settings (Java 21)
-- These files are required for jdtls (Java LSP) to recognize the project structure
+- These files are required for jdtls (Java LSP) and are deliberately untracked; on a fresh clone, jdtls regenerates them on first import. If it regenerates them with Maven/m2e entries, strip those — keep the plain Java nature.
+
+**Build outputs (all gitignored):** `out/` is the Makefile/javac output; `bin/` is the jdtls/Eclipse-compiler output. They are independent — never reference one from the other.
 
 **Directory Structure:**
 
