@@ -1,130 +1,112 @@
 ---
 name: init-problem
-description: This skill should be used when the user asks to "initialize a LeetCode problem", "create a new problem", "init problem", "add problem 235", or provides a problem like "235. Two Sum". Also use when updating problem description or method signature after initialization.
+description: This skill should be used when the user asks to "initialize a LeetCode problem", "create a new problem", "init problem", "add problem 235", or provides a problem reference like "235", "235. Two Sum", "two-sum", or "Two Sum". Also use when updating problem description or method signature after initialization.
 ---
 
 # LeetCode Problem Initialization
 
-Initialize, create, and update LeetCode problem classes following the repository's naming conventions and structure.
+Initialize LeetCode problem classes following the repository's naming conventions. Problem metadata (description, difficulty, method signature, topic tags) is fetched automatically from LeetCode's GraphQL API — the user only needs to provide a problem reference.
 
 ## Capabilities
 
-1. **Initialize new problem** - Create empty problem class from problem name
-2. **Update description** - Add/update problem description in Javadoc
-3. **Update method signature** - Add/update solution method placeholder
-4. **Set patterns and difficulty** - Configure implemented interfaces
+1. **Initialize new problem** - Create a fully populated problem template from just a number, slug, or name
+2. **Auto-fetch metadata** - Description, difficulty, Java method signature, and pattern mapping from LeetCode
+3. **Update description / signature / patterns** - Manual updates after initialization
 
 ## Problem Initialization Workflow
 
-### Parse Problem Input
+### Step 1: Fetch Problem Metadata
 
-Extract problem number and name from input format: `{number}. {Problem Name}`
+Run the fetch script with whatever reference the user gave (number, `"N. Name"`, slug, or plain name):
 
-Examples:
-- `235. Lowest Common Ancestor of a Binary Search Tree` → number: 235, name: LowestCommonAncestorOfABinarySearchTree
-- `1. Two Sum` → number: 1, name: TwoSum
+```bash
+python3 .claude/skills/init-problem/scripts/fetch_problem.py 200
+python3 .claude/skills/init-problem/scripts/fetch_problem.py "200. Number of Islands"
+python3 .claude/skills/init-problem/scripts/fetch_problem.py number-of-islands
+```
 
-### Calculate Location
+Output JSON fields:
+
+| Field | Use |
+|-------|-----|
+| `id` | Problem number → package directory and file name |
+| `title` | PascalCase conversion → class name |
+| `url` | Javadoc link |
+| `difficulty` | Difficulty interface (`Easy` / `Medium` / `Hard`) |
+| `description` | Javadoc problem description (plain text, includes examples and constraints) |
+| `javaSnippet` | Official Java signature → solution method stub |
+| `patterns` | Topic tags already mapped to this repo's pattern interfaces |
+| `unmappedTags` | Tags with no matching interface — report to the user (see Step 5) |
+
+On `{"error": ...}` output (ambiguous name, not found), relay the message/candidates to the user. If the script fails entirely (offline), fall back to the manual flow: ask the user to paste description, signature, patterns, and difficulty.
+
+### Step 2: Calculate Location
 
 **Package directory formula:**
 ```
-start = ((number - 1) / 100) * 100 + 1
+start = ((id - 1) / 100) * 100 + 1
 end = start + 99
 package = p{start:04d}_{end:04d}
 ```
 
-Examples:
-- Problem 1 → `p0001_0100`
-- Problem 235 → `p0201_0300`
-- Problem 1234 → `p1201_1300`
-
-**File naming:** `_{number:04d}_{PascalCaseName}.java`
+**File naming:** `_{id:04d}_{PascalCaseTitle}.java` (see `references/class-template.md` for PascalCase rules)
 
 **Full path:** `src/problems/{package}/{filename}`
 
-### Check Existence
+### Step 3: Check Existence
 
-Use Glob to check: `src/problems/**/_NNNN_*.java`
+Use Glob: `src/problems/**/_NNNN_*.java`
 
 **If exists:** Report location and stop. DO NOT overwrite.
 
-```
-Problem already exists at: problems.{package}._{NNNN}_{Name}
-Path: src/problems/{package}/_{NNNN}_{Name}.java
-```
+### Step 4: Create Problem Class
 
-### Create Problem Class
+Create the package directory if needed, then create the Java file using the template from `references/class-template.md`, fully populated from the fetched metadata:
 
-Create package directory if needed, then create Java file using template from `references/class-template.md`.
+1. **Javadoc**: `description` text (keep examples and constraints), ending with the `<a href="{url}">{id}. {title}</a>` link
+2. **implements**: all interfaces from `patterns` + the difficulty interface
+3. **Method stub**: signature from `javaSnippet` (drop the `class Solution` wrapper), with complexity placeholder Javadoc and an empty `// TODO: Implement solution` body — NEVER implement the solution (Practice Mode)
+4. **Inner classes**: if the signature uses `ListNode` / `TreeNode` / `Node`, add the definition from `references/inner-classes.md`
 
-### Report and Prompt
+### Step 5: Report
 
-After creation:
 ```
 Created: src/problems/{package}/_{NNNN}_{Name}.java
-Package: problems.{package}
-Class: _{NNNN}_{Name}
+Difficulty: {difficulty}
+Patterns: {patterns}
 ```
 
-Then prompt user for:
-1. Problem description (paste from LeetCode)
-2. Method signature
-3. Patterns (see `src/patterns/` for available interfaces)
-4. Difficulty (Easy, Medium, Hard from `src/difficulty/`)
+If `unmappedTags` is non-empty, list them and note there is no matching pattern interface. Ask the user whether to create a new pattern interface only when the tag represents a real algorithmic technique (e.g. Trie); ignore catalog-style tags (e.g. Design, Simulation) unless the user asks.
+
+Then compile-check: `make compile`
 
 ## Updating Existing Problems
 
-### Update Description
+For manual updates after initialization (user provides new text):
 
-When user provides problem description:
+- **Description**: Replace the description section in Javadoc, keep the LeetCode URL link
+- **Method signature**: Replace/add the method stub with complexity placeholders; add inner classes if needed
+- **Patterns/difficulty**: Update imports and the `implements` clause
 
-1. Read the existing file
-2. Replace the `TODO: Add problem description` section in Javadoc with formatted description
-3. Include examples if provided
-4. Keep the LeetCode URL link
-
-### Update Method Signature
-
-When user provides method signature like `public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)`:
-
-1. Read the existing file
-2. Replace `// TODO: Add solution method(s)` with the method stub
-3. Add complexity documentation placeholders
-4. If method uses custom types (TreeNode, ListNode), add inner class definition
-
-### Update Patterns and Difficulty
-
-When user specifies patterns/difficulty:
-
-1. Read the existing file
-2. Add appropriate imports from `patterns/` and `difficulty/` packages
-3. Update class declaration to implement specified interfaces
-4. Remove the `/* TODO: implements ... */` comment
-
-### Test Harness
+## Test Harness
 
 When the user reports a failing test case or asks to test against a LeetCode input, use the **debug-problem** skill instead — it builds a `main()` harness with `utils.LeetCodeInput`.
 
 ## Reference Files
 
-- **`references/class-template.md`** - Java class template for new problems
+- **`references/class-template.md`** - Java class template and naming conversion rules
 - **`references/inner-classes.md`** - Common inner class definitions (TreeNode, ListNode, etc.)
+- **`scripts/fetch_problem.py`** - LeetCode GraphQL fetcher (stdlib-only Python 3)
 
 ## Quick Examples
 
-**Initialize:**
+**All equivalent:**
 ```
-/init-problem 235. Lowest Common Ancestor of a Binary Search Tree
-```
-
-**After creation, user might say:**
-```
-Description: Given a binary search tree (BST), find the lowest common ancestor...
-
-Method: public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q)
-
-Patterns: TreePattern, BinarySearchPattern
-Difficulty: Medium
+/init-problem 200
+/init-problem 200. Number of Islands
+/init-problem number-of-islands
 ```
 
-The skill then updates the file with all provided information.
+Result: `src/problems/p0101_0200/_0200_NumberOfIslands.java` implementing
+`ArrayPattern, BreadthFirstSearchPattern, DepthFirstSearchPattern, MatrixPattern, UnionFindPattern, Medium`,
+with the full problem description in Javadoc and a `public int numIslands(char[][] grid)` stub.
